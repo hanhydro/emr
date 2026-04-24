@@ -31,6 +31,7 @@ Put units in the header (e.g. `t (d), E (m), P (mm)`) so the app labels plots
 and downloads correctly. A small synthetic `public/sample-data.csv` ships for
 first-run exploration.
 
+
 ## Flow
 
 1. **Upload** — drop a CSV or load the sample.
