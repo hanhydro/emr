@@ -1,19 +1,24 @@
 import Plot from 'react-plotly.js';
 import { forwardRef } from 'react';
 import type { Episode, Headers } from '../core/types';
+import { labelsFor } from '../core/labels';
+import type { DataType } from '../state/store';
 
 interface Props {
   episodes: Episode[];
   headers: Headers;
+  dataType: DataType;
 }
 
 export const EpisodesPane = forwardRef<HTMLDivElement, Props>(function EpisodesPane(
-  { episodes, headers },
+  { episodes, headers, dataType },
   ref,
 ) {
+  const labels = labelsFor(dataType);
   const x = episodes.map((e) => e.tPeak);
   const rech = episodes.map((e) => e.recharge);
   const precip = episodes.map((e) => e.matchedPrecip);
+  const title = dataType === 'WT' ? 'Recharge episodes' : 'Discharge-rise episodes';
   return (
     <div ref={ref} className="plot-wrap">
       <Plot
@@ -22,7 +27,7 @@ export const EpisodesPane = forwardRef<HTMLDivElement, Props>(function EpisodesP
             x,
             y: rech,
             type: 'bar',
-            name: `recharge (Sy·Δh, ${headers.r})`,
+            name: `${labels.rechargeLabel} (${headers.r})`,
             marker: { color: '#1f77b4' },
           },
           {
@@ -35,10 +40,10 @@ export const EpisodesPane = forwardRef<HTMLDivElement, Props>(function EpisodesP
           },
         ]}
         layout={{
-          title: { text: 'Recharge episodes' },
+          title: { text: title },
           barmode: 'group',
           xaxis: { title: { text: headers.t } },
-          yaxis: { title: { text: `recharge (${headers.r})` } },
+          yaxis: { title: { text: `${labels.rechargeLabel} (${headers.r})` } },
           yaxis2: {
             title: { text: `precipitation (${headers.p})` },
             overlaying: 'y',

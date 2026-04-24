@@ -1,4 +1,6 @@
 import type { Episode, Headers, MrcFit, MrcParams, EmrParams, Row, RunResult } from './types';
+import type { DataType } from '../state/store';
+import { labelsFor } from './labels';
 
 export function downloadText(filename: string, text: string, mime = 'text/plain'): void {
   const blob = new Blob([text], { type: mime });
@@ -12,7 +14,12 @@ export function downloadText(filename: string, text: string, mime = 'text/plain'
   URL.revokeObjectURL(url);
 }
 
-export function episodesToCsv(episodes: Episode[], headers: Headers): string {
+export function episodesToCsv(
+  episodes: Episode[],
+  headers: Headers,
+  dataType: DataType,
+): string {
+  const labels = labelsFor(dataType);
   const head = [
     'episode',
     `t_start (${headers.t})`,
@@ -24,7 +31,7 @@ export function episodesToCsv(episodes: Episode[], headers: Headers): string {
     `mrc_B (${headers.r})`,
     `mrc_F (${headers.r})`,
     `deltaH (${headers.r})`,
-    `recharge (${headers.r})`,
+    `${labels.rechargeShort} (${headers.r})`,
     `matched_precip (${headers.p})`,
   ];
   const lines = [head.join(',')];
@@ -83,6 +90,7 @@ export async function downloadPdfReport(opts: {
   headers: Headers;
   mrcParams: MrcParams;
   emrParams: EmrParams;
+  dataType: DataType;
 }): Promise<void> {
   const { default: jsPDF } = await import('jspdf');
   const Plotly = (await import('plotly.js-dist-min')).default;
@@ -91,24 +99,36 @@ export async function downloadPdfReport(opts: {
   const margin = 36;
   let y = margin;
 
+  const typeLabels = labelsFor(opts.dataType);
+  const title =
+    opts.dataType === 'WT'
+      ? 'Water Table Fluctuation — MRC + EMR'
+      : 'Streamflow Hydrograph — MRC + EMR';
+  const totalName = opts.dataType === 'WT' ? 'Total recharge' : 'Total Δh';
+
   doc.setFontSize(16);
-  doc.text('Water Table Fluctuation — MRC + EMR', margin, y);
+  doc.text(title, margin, y);
   y += 20;
   doc.setFontSize(10);
   doc.text(`Generated: ${new Date().toISOString()}`, margin, y);
+  y += 14;
+  doc.text(`Data type: ${opts.dataType} (${typeLabels.rName})`, margin, y);
   y += 18;
 
   doc.setFontSize(12);
   doc.text('Parameters', margin, y);
   y += 14;
   doc.setFontSize(10);
+  const emrLine = opts.dataType === 'WT'
+    ? `EMR: Sy=${opts.emrParams.sy}, Fd=${opts.emrParams.fd}, tLag=${opts.emrParams.tLag}`
+    : `EMR: Fd=${opts.emrParams.fd}, tLag=${opts.emrParams.tLag}  (Sy not used for Q)`;
   const paramLines = [
     `MRC: Rmin=${opts.mrcParams.rMin}, Rmax=${opts.mrcParams.rMax}, tSincePrecip=${opts.mrcParams.tSincePrecip}, Pnegligible=${opts.mrcParams.pNegligible}, slopeMax=${opts.mrcParams.slopeMax}, minLen=${opts.mrcParams.minElementLen}, maxLen=${opts.mrcParams.maxElementLen}, segments=${opts.mrc.segments}`,
     `MRC fit: ${opts.mrc.segments === 1
       ? `dR/dt = ${opts.mrc.a[0].toFixed(4)} + ${opts.mrc.b[0].toFixed(4)}·R,  R² = ${opts.mrc.rSquared.toFixed(3)}`
       : `2-seg at R* = ${opts.mrc.breakR?.toFixed(3)};  L: dR/dt = ${opts.mrc.a[0].toFixed(4)} + ${opts.mrc.b[0].toFixed(4)}·R;  R: dR/dt = ${opts.mrc.a[1].toFixed(4)} + ${opts.mrc.b[1].toFixed(4)}·R,  R² = ${opts.mrc.rSquared.toFixed(3)}`}`,
-    `EMR: Sy=${opts.emrParams.sy}, Fd=${opts.emrParams.fd}, tLag=${opts.emrParams.tLag}`,
-    `Episodes: ${opts.result.totals.count} | Total recharge: ${opts.result.totals.recharge.toFixed(4)} | Matched precip: ${opts.result.totals.precip.toFixed(4)} | Ratio: ${opts.result.totals.ratio.toFixed(3)}`,
+    emrLine,
+    `Episodes: ${opts.result.totals.count} | ${totalName}: ${opts.result.totals.recharge.toFixed(4)} | Matched precip: ${opts.result.totals.precip.toFixed(4)} | Ratio: ${opts.result.totals.ratio.toFixed(3)}`,
   ];
   for (const line of paramLines) {
     doc.text(line, margin, y, { maxWidth: 540 });
@@ -116,7 +136,11 @@ export async function downloadPdfReport(opts: {
   }
   y += 6;
 
-  const labels = ['Hydrograph', 'MRC fit', 'Recharge episodes'];
+  const labels = [
+    'Hydrograph',
+    'MRC fit',
+    opts.dataType === 'WT' ? 'Recharge episodes' : 'Discharge-rise episodes',
+  ];
   for (let i = 0; i < opts.plotDivs.length; i++) {
     const target = resolvePlotDiv(opts.plotDivs[i]);
     if (!target) continue;
