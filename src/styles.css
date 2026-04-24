@@ -1,0 +1,215 @@
+:root {
+  color-scheme: light dark;
+  --bg: #ffffff;
+  --fg: #222;
+  --muted: #666;
+  --border: #d6d6d6;
+  --accent: #1f77b4;
+  --error: #b0223c;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #14161a;
+    --fg: #e6e6e6;
+    --muted: #9aa0a6;
+    --border: #2e323a;
+    --accent: #4da3e0;
+    --error: #ff6980;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+.app {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.25rem;
+}
+
+header h1 {
+  margin: 0 0 0.25rem;
+  font-size: 1.4rem;
+}
+
+.subtitle {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.stage-nav {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.stage-nav span {
+  color: var(--muted);
+}
+
+.stage-nav span.active {
+  color: var(--fg);
+  font-weight: 600;
+  border-bottom: 2px solid var(--accent);
+  padding-bottom: 0.25rem;
+}
+
+.stage {
+  margin-bottom: 2rem;
+}
+
+.stage h2 {
+  margin-top: 0;
+}
+
+.params-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+
+.param {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.param.checkbox {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.param-label {
+  font-size: 0.9rem;
+}
+
+.param-plain {
+  color: var(--muted);
+  font-weight: normal;
+}
+
+.param-help {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.param input[type='number'] {
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin: 0.75rem 0;
+}
+
+button {
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--fg);
+  border-radius: 5px;
+  cursor: pointer;
+  font: inherit;
+}
+
+button:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+button.link {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  text-decoration: underline;
+  padding: 0;
+  margin-left: auto;
+}
+
+.upload-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.error {
+  color: var(--error);
+  border: 1px solid var(--error);
+  padding: 0.6rem 0.8rem;
+  border-radius: 4px;
+  margin: 0.75rem 0;
+}
+
+.plot-wrap {
+  margin: 1rem 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.summary {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.totals {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+table.episodes {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+table.episodes th,
+table.episodes td {
+  border: 1px solid var(--border);
+  padding: 0.3rem 0.5rem;
+  text-align: right;
+}
+
+table.episodes th:first-child,
+table.episodes td:first-child {
+  text-align: center;
+}
+
+footer {
+  margin-top: 2rem;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+  padding-top: 0.75rem;
+}
+
+a {
+  color: var(--accent);
+}
