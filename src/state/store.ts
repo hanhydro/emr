@@ -9,9 +9,11 @@ import type {
 } from '../core/types';
 
 export type Stage = 'upload' | 'mrc' | 'emr' | 'results';
+export type DataType = 'WT' | 'Q';
 
 interface AppState {
   stage: Stage;
+  dataType: DataType;
   rows: Row[] | null;
   headers: Headers | null;
   fileName: string | null;
@@ -20,6 +22,7 @@ interface AppState {
   mrc: MrcFit | null;
   result: RunResult | null;
   setStage: (s: Stage) => void;
+  setDataType: (t: DataType) => void;
   setData: (rows: Row[], headers: Headers, fileName: string) => void;
   setMrcParams: (p: Partial<MrcParams>) => void;
   setEmrParams: (p: Partial<EmrParams>) => void;
@@ -47,6 +50,7 @@ const defaultEmr: EmrParams = {
 
 export const useStore = create<AppState>((set) => ({
   stage: 'upload',
+  dataType: 'WT',
   rows: null,
   headers: null,
   fileName: null,
@@ -55,6 +59,7 @@ export const useStore = create<AppState>((set) => ({
   mrc: null,
   result: null,
   setStage: (stage) => set({ stage }),
+  setDataType: (dataType) => set({ dataType }),
   setData: (rows, headers, fileName) =>
     set({ rows, headers, fileName, mrc: null, result: null, stage: 'mrc' }),
   setMrcParams: (p) =>
@@ -66,6 +71,7 @@ export const useStore = create<AppState>((set) => ({
   reset: () =>
     set({
       stage: 'upload',
+      dataType: 'WT',
       rows: null,
       headers: null,
       fileName: null,

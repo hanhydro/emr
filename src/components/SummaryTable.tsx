@@ -1,18 +1,24 @@
 import type { Episode, Headers, RunResult } from '../core/types';
+import { labelsFor } from '../core/labels';
+import type { DataType } from '../state/store';
 
 interface Props {
   result: RunResult;
   headers: Headers;
+  dataType: DataType;
 }
 
-export function SummaryTable({ result, headers }: Props) {
+export function SummaryTable({ result, headers, dataType }: Props) {
+  const labels = labelsFor(dataType);
+  const totalLabel = dataType === 'WT' ? 'Total recharge' : 'Total Δh';
+  const ratioLabel = dataType === 'WT' ? 'Recharge / precip' : 'Δh / precip';
   return (
     <div className="summary">
       <div className="totals">
         <div><strong>Episodes:</strong> {result.totals.count}</div>
-        <div><strong>Total recharge ({headers.r}):</strong> {result.totals.recharge.toFixed(4)}</div>
+        <div><strong>{totalLabel} ({headers.r}):</strong> {result.totals.recharge.toFixed(4)}</div>
         <div><strong>Matched precip ({headers.p}):</strong> {result.totals.precip.toFixed(4)}</div>
-        <div><strong>Recharge / precip:</strong> {result.totals.ratio.toFixed(3)}</div>
+        <div><strong>{ratioLabel}:</strong> {result.totals.ratio.toFixed(3)}</div>
       </div>
       <table className="episodes">
         <thead>
@@ -22,7 +28,7 @@ export function SummaryTable({ result, headers }: Props) {
             <th>t_peak ({headers.t})</th>
             <th>t_end ({headers.t})</th>
             <th>Δh ({headers.r})</th>
-            <th>recharge ({headers.r})</th>
+            <th>{labels.rechargeLabel} ({headers.r})</th>
             <th>precip ({headers.p})</th>
           </tr>
         </thead>

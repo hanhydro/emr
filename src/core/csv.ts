@@ -40,5 +40,12 @@ export function parseCsv(text: string): ParsedCsv {
   if (rows.length < 2) {
     throw new Error('CSV has fewer than 2 valid numeric rows.');
   }
+  for (let i = 1; i < rows.length; i++) {
+    if (!(rows[i].t > rows[i - 1].t)) {
+      throw new Error(
+        `Time column must be strictly increasing. Row ${i + 1} has t=${rows[i].t} following t=${rows[i - 1].t}. Sort rows and remove duplicates before uploading.`,
+      );
+    }
+  }
   return { rows, headers, rawHeaders };
 }

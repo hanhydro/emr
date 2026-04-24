@@ -156,6 +156,36 @@ button.link {
   align-items: center;
 }
 
+.type-picker {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem 0.75rem;
+  margin: 0.5rem 0 1rem;
+}
+
+.type-picker legend {
+  padding: 0 0.4rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.type-picker label {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  padding: 0.35rem 0;
+  cursor: pointer;
+}
+
+.type-picker label em {
+  color: var(--muted);
+  font-style: normal;
+}
+
+.type-picker label.selected strong {
+  color: var(--accent);
+}
+
 .error {
   color: var(--error);
   border: 1px solid var(--error);
