@@ -19,6 +19,11 @@ export function findEpisodes(
     if (!withinLag) continue;
     if (d[i] <= params.fd) continue;
 
+    // Walk back from the trigger to the local minimum before the rise —
+    // the true pre-episode baseline for MRC-B projection.
+    let iStart = i;
+    while (iStart > 0 && rows[iStart].r > rows[iStart - 1].r) iStart--;
+
     let j = i;
     let peak = i;
     while (j < n) {
@@ -26,7 +31,6 @@ export function findEpisodes(
       if (j > peak && d[j] <= params.fd) break;
       j++;
     }
-    const iStart = i;
     const iPeak = peak;
     const iEnd = Math.min(j, n - 1);
 
@@ -34,8 +38,8 @@ export function findEpisodes(
     const rPeak = rows[iPeak].r;
 
     let mrcB = rStart;
-    for (let k = iStart; k <= iPeak; k++) {
-      const dt = rows[k].t - rows[Math.max(k - 1, 0)].t;
+    for (let k = iStart + 1; k <= iPeak; k++) {
+      const dt = rows[k].t - rows[k - 1].t;
       if (dt > 0) mrcB += mrcSlope(fit, mrcB) * dt;
     }
 
